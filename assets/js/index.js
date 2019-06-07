@@ -1,48 +1,83 @@
-var gameStarted = false;
+var wordList = ["joffrey", "tywin", "ned"];
+var randomWord = "";
+var correctGuesses = [];
+var totalLettersGuessed = [];
+var letterGuessed;
+var randomWordLength = 0;
+var randomIndex = 0;
+var treasonsAllowed = 5;
+var treasons = 0;
+var underScores = 0;
+
+function reset() {
+    randomWord = "";
+    correctGuesses = [];
+    totalLettersGuessed = [];
+    letterGuessed;
+    randomWordLength = 0;
+    randomIndex = 0;
+    treasonsAllowed = 5;
+    treasons = 0;
+    underScores = 0;
+}
 
 function startGame() {
-    // Generate a random word 
-    var words = ["joffrey", "tywin", "ned"];
-    var wordLength = words.length;
-    var randomWord = Math.floor(Math.random() * wordLength);
-    var randomWordLength = words[randomWord].length;
-    var correctGuesses = Array(randomWordLength).fill("_ ");
-    var totalGuesses = [];
+    // Reset all values on subsequent gameplays
+    reset();
 
-    // Add underscores the length of the random word
-    for(var i = 0; i < randomWordLength; i++) {
-        var currentContent = document.getElementsByClassName("word")[0];
-        currentContent.textContent = currentContent.textContent + correctGuesses[i];
+    // Select random word and get its length
+    randomIndex = Math.floor(Math.random() * wordList.length);
+    randomWord = wordList[randomIndex];
+    randomWordLength = wordList[randomIndex].length;
+
+    // Fill blanks for the random word
+    for (var i = 0; i < randomWordLength; i++) {
+        correctGuesses.push("_");
     }
 
-    addEventListener("keypress", function (e) {
-        var letter = e.key.toLowerCase();
-        if(words[randomWord].includes(letter)) {
-            var updateUnderscore = words[randomWord].indexOf(letter);
-            if(updateUnderscore === 0) {
-                correctGuesses[updateUnderscore] = letter.toUpperCase();
-            }
-            else {
-                correctGuesses[updateUnderscore] = letter
-            }
-            currentContent.textContent = "";
+    // Display Data on Document
+    document.getElementById("word").textContent = correctGuesses.join(" ");
+    document.getElementById("score").textContent = treasons + " of " + treasonsAllowed + " acts of treason";
+    document.getElementById("guessed").textContent = totalLettersGuessed.join(" ");
+}
+
+function checkLetter(letter) {
+    // If the letter was guessed before, do nothing, otherwise continue
+    if (!totalLettersGuessed.includes(letter)) {
+        if (randomWord.includes(letter)) {
             for (var i = 0; i < randomWordLength; i++) {
-                currentContent.textContent = currentContent.textContent + correctGuesses[i]; 
+                if (randomWord[i] === letter) {
+                    correctGuesses[i] = letter;
+                }
             }
+        } else {
+            totalLettersGuessed.push(letter);
+            treasons++;
         }
-        totalGuesses.push(letter);
-        var lettersGuessed = document.getElementsByClassName("guessed")[0];
-        lettersGuessed.textContent = lettersGuessed.textContent + totalGuesses[totalGuesses.length - 1];
-        
-    });
+    }
 }
 
-// Add event listener for first key press, start the game, and remove listener
-function firstKeyPress() {
-    document.getElementsByClassName("title")[0].textContent = "Goodluck!"
-    document.getElementsByClassName("intro")[0].textContent = "Guess a letter: "
-    startGame();
-    removeEventListener("keypress", firstKeyPress);
+function updateStats() {
+    // Display Data on Document
+    document.getElementById("word").textContent = correctGuesses.join(" ");
+    document.getElementById("score").textContent = treasons + " of " + treasonsAllowed + " acts of treason";
+    document.getElementById("guessed").textContent = totalLettersGuessed.join(" ");
+
+    if(!correctGuesses.includes("_")) {
+        alert("Winner, winner, chicken dinner!");
+        startGame();
+    }
+    else if(treasons === treasonsAllowed) {
+        alert("Lahuuuuu-zuuuh-herrrr.");
+        startGame();
+    }
 }
 
-addEventListener("keypress", firstKeyPress);
+// Initialize game setup
+startGame();
+
+// When player presses key, check the letter, and update stats
+document.onkeypress = function (e) {
+    checkLetter(e.key.toLowerCase());
+    updateStats();
+}
