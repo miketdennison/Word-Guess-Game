@@ -1,25 +1,19 @@
-.title{
-
+body {
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    background-image: url("../images/324683-P9JL1K-158.jpg");
+    background-size: auto;
+}
+#title {
+    font-family: 'Cinzel Decorative', cursive;
 }
 
-.photo {
-
+.hide {
+    display: none;
 }
 
-.info {
-
-}
-
-.intro {
-
-}
-
-.wins {
-
-}
-
-.guessed {
-
+.show {
+    display: block;
 }
 
 
